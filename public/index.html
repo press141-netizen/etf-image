@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETF 테마 이미지 라이브러리</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --bg-primary: #0a0a0f; --bg-secondary: #12121a; --bg-tertiary: #1a1a25; --bg-card: #16161f; --text-primary: #ffffff; --text-secondary: #a0a0b0; --text-muted: #6b6b7b; --accent-primary: #6366f1; --accent-secondary: #818cf8; --accent-glow: rgba(99, 102, 241, 0.3); --border-color: #2a2a3a; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+    .app { min-height: 100vh; background: linear-gradient(135deg, var(--bg-primary) 0%, #0f0f18 100%); }
+    .header { background: rgba(18, 18, 26, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); padding: 1.5rem 2rem; position: sticky; top: 0; z-index: 100; }
+    .header-content { max-width: 1600px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+    .logo { display: flex; align-items: center; gap: 0.75rem; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; box-shadow: 0 4px 20px var(--accent-glow); }
+    .logo-text { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 600; background: linear-gradient(90deg, #fff, #a0a0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .search-box { position: relative; width: 320px; }
+    .search-input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary); font-size: 0.9rem; }
+    .search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .btn { padding: 0.75rem 1.25rem; border-radius: 10px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .btn-secondary:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+    .btn-small { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+    .main-content { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+    .filters { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
+    .filter-group { display: flex; align-items: center; gap: 0.5rem; }
+    .filter-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    .filter-select { padding: 0.6rem 2rem 0.6rem 1rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 0.9rem; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6b7b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; font-family: inherit; }
+    .filter-select:focus { outline: none; border-color: var(--accent-primary); }
+    .stats { margin-left: auto; display: flex; gap: 1.5rem; }
+    .stat-item { text-align: center; }
+    .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--accent-secondary); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+    .view-toggle { display: flex; background: var(--bg-tertiary); border-radius: 8px; padding: 4px; border: 1px solid var(--border-color); }
+    .view-toggle-btn { padding: 0.5rem 0.75rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 6px; font-size: 0.85rem; }
+    .view-toggle-btn.active { background: var(--accent-primary); color: white; }
+    .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .image-grid.list-view { grid-template-columns: 1fr; gap: 1rem; }
+    .image-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); transition: all 0.3s ease; cursor: pointer; }
+    .image-card:hover { transform: translateY(-4px); border-color: var(--accent-primary); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); }
+    .image-grid.list-view .image-card { display: flex; }
+    .image-preview { position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--bg-tertiary); }
+    .image-grid.list-view .image-preview { width: 200px; flex-shrink: 0; aspect-ratio: auto; height: 150px; }
+    .image-preview img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .image-card:hover .image-preview img { transform: scale(1.05); }
+    .status-badge { position: absolute; top: 0.75rem; left: 0.75rem; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .image-info { padding: 1rem; }
+    .image-grid.list-view .image-info { flex: 1; padding: 1rem 1.5rem; }
+    .image-service { font-size: 0.7rem; color: #f59e0b; font-weight: 600; text-transform: uppercase; margin-bottom: 0.15rem; }
+    .image-theme { font-size: 1.1rem; color: var(--accent-secondary); font-weight: 700; margin-bottom: 0.25rem; }
+    .image-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .tag { padding: 0.25rem 0.6rem; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.75rem; color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .mood-tag { background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); color: var(--accent-secondary); }
+    .list-extra-info { display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); }
+    .image-grid.list-view .list-extra-info { display: block; }
+    .list-extra-row { display: flex; gap: 2rem; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+    .list-extra-label { color: var(--text-muted); min-width: 80px; }
+    .list-extra-value { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .theme-group { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1.5rem; overflow: hidden; }
+    .theme-group-header { padding: 1.25rem 1.5rem; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
+    .theme-group-header:hover { background: var(--bg-secondary); }
+    .theme-group-title { display: flex; align-items: center; gap: 1rem; }
+    .theme-group-name { font-size: 1.1rem; font-weight: 600; color: var(--accent-secondary); }
+    .theme-group-count { font-size: 0.85rem; color: var(--text-muted); background: var(--bg-card); padding: 0.25rem 0.75rem; border-radius: 12px; }
+    .theme-group-meta { display: flex; align-items: center; gap: 1rem; }
+    .theme-group-services { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .theme-group-service { font-size: 0.7rem; padding: 0.2rem 0.5rem; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-radius: 4px; }
+    .theme-group-toggle { font-size: 1.25rem; color: var(--text-muted); transition: transform 0.3s; }
+    .theme-group-toggle.open { transform: rotate(180deg); }
+    .theme-group-content { padding: 1.5rem; display: none; }
+    .theme-group-content.open { display: block; }
+    .theme-group-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    .theme-group-image { position: relative; aspect-ratio: 4/3; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+    .theme-group-image:hover { border-color: var(--accent-primary); transform: scale(1.02); }
+    .theme-group-image.selected { border-color: var(--accent-primary); box-shadow: 0 0 0 2px var(--accent-glow); }
+    .theme-group-image img { width: 100%; height: 100%; object-fit: cover; }
+    .theme-group-image-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.85)); }
+    .theme-group-image-theme { font-size: 0.9rem; font-weight: 600; color: white; margin-bottom: 0.15rem; }
+    .theme-group-image-status { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.65rem; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .theme-group-image-checkbox { position: absolute; top: 0.5rem; left: 0.5rem; width: 20px; height: 20px; background: rgba(0,0,0,0.5); border: 2px solid white; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem; }
+    .theme-group-image-checkbox.checked { background: var(--accent-primary); border-color: var(--accent-primary); }
+    .theme-group-actions { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .theme-group-bulk-actions { display: flex; gap: 0.5rem; align-items: center; padding: 0.75rem; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 1rem; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 2rem; }
+    .modal { background: var(--bg-secondary); border-radius: 20px; border: 1px solid var(--border-color); max-width: 900px; width: 100%; max-height: 90vh; overflow: hidden; }
+    .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-size: 1.25rem; font-weight: 600; }
+    .modal-close { width: 36px; height: 36px; border-radius: 8px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
+    .modal-body { padding: 1.5rem; overflow-y: auto; max-height: calc(90vh - 80px); }
+    .detail-modal { max-width: 1200px; }
+    .detail-content { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .detail-image { width: 100%; border-radius: 12px; }
+    .detail-info-section { display: flex; flex-direction: column; gap: 1.25rem; }
+    .detail-field { display: flex; flex-direction: column; gap: 0.5rem; }
+    .detail-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 500; }
+    .service-list { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .service-tag { padding: 0.35rem 0.6rem; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; font-size: 0.85rem; color: #f59e0b; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .service-remove { background: transparent; border: none; color: #f59e0b; cursor: pointer; font-size: 0.9rem; padding: 0; line-height: 1; }
+    .service-remove:hover { color: var(--danger); }
+    .service-add-btn { padding: 0.35rem 0.6rem; background: transparent; border: 1px dashed rgba(245, 158, 11, 0.5); border-radius: 6px; font-size: 0.85rem; color: #f59e0b; cursor: pointer; }
+    .service-add-btn:hover { background: rgba(245, 158, 11, 0.1); }
+    .service-select { padding: 0.35rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-family: inherit; }
+    .status-selector { display: flex; gap: 0.5rem; }
+    .status-btn { flex: 1; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: 2px solid transparent; background: var(--bg-tertiary); color: var(--text-secondary); font-family: inherit; transition: all 0.2s; }
+    .status-btn.active { border-color: currentColor; }
+    .status-btn.final { color: var(--success); }
+    .status-btn.final.active { background: rgba(16, 185, 129, 0.15); }
+    .status-btn.candidate { color: var(--warning); }
+    .status-btn.candidate.active { background: rgba(245, 158, 11, 0.15); }
+    .status-btn.reference { color: var(--text-muted); }
+    .status-btn.reference.active { background: var(--bg-card); }
+    .tags-container { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .tag-item { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.5rem 0.35rem 0.75rem; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem; color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .tag-remove { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0; line-height: 1; }
+    .tag-remove:hover { color: var(--danger); }
+    .tag-input { padding: 0.35rem 0.75rem; background: var(--bg-primary); border: 1px dashed var(--border-color); border-radius: 6px; font-size: 0.85rem; color: var(--text-primary); min-width: 100px; font-family: inherit; }
+    .tag-input:focus { outline: none; border-color: var(--accent-primary); border-style: solid; }
+    .textarea-field { width: 100%; padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 0.9rem; resize: vertical; min-height: 60px; font-family: inherit; }
+    .textarea-field:focus { outline: none; border-color: var(--accent-primary); }
+    .detail-actions { display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+    .download-group { display: flex; gap: 0.5rem; flex: 1; }
+    .download-group .filter-select { flex: 1; }
+    .similar-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); }
+    .similar-title { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .similar-grid { display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem; }
+    .similar-item { flex-shrink: 0; width: 100px; cursor: pointer; border-radius: 8px; overflow: hidden; border: 2px solid transparent; transition: border-color 0.2s; }
+    .similar-item:hover { border-color: var(--accent-primary); }
+    .similar-item img { width: 100%; height: 75px; object-fit: cover; }
+    .similar-info { padding: 0.35rem; background: var(--bg-tertiary); font-size: 0.7rem; color: var(--text-muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .service-images-section { margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 12px; border: 1px solid var(--border-color); }
+    .service-images-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .service-image-row { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--bg-card); border-radius: 8px; margin-bottom: 0.5rem; }
+    .service-image-row:last-child { margin-bottom: 0; }
+    .service-image-name { font-size: 0.9rem; color: #f59e0b; font-weight: 500; min-width: 100px; }
+    .service-image-size { font-size: 0.8rem; color: var(--text-muted); min-width: 80px; }
+    .service-image-preview { width: 60px; height: 40px; border-radius: 4px; overflow: hidden; background: var(--bg-tertiary); flex-shrink: 0; cursor: pointer; transition: transform 0.2s; }
+    .service-image-preview:hover { transform: scale(1.1); }
+    .service-image-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .service-image-upload { flex: 1; display: flex; justify-content: flex-end; gap: 0.5rem; align-items: center; }
+    .service-image-status { font-size: 0.8rem; padding: 0.25rem 0.5rem; border-radius: 4px; }
+    .service-image-status.uploaded { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .service-image-status.original { background: rgba(99, 102, 241, 0.15); color: var(--accent-secondary); }
+    .service-image-status.missing { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+    .lightbox-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; cursor: zoom-out; }
+    .lightbox-content { max-width: 95vw; max-height: 95vh; position: relative; }
+    .lightbox-content img { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 8px; }
+    .lightbox-info { position: absolute; bottom: -40px; left: 0; right: 0; text-align: center; color: var(--text-secondary); font-size: 0.9rem; }
+    .upload-zone { border: 2px dashed var(--border-color); border-radius: 16px; padding: 3rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .upload-zone:hover { border-color: var(--accent-primary); background: rgba(99, 102, 241, 0.05); }
+    .upload-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .upload-text { color: var(--text-secondary); margin-bottom: 0.5rem; }
+    .upload-hint { font-size: 0.85rem; color: var(--text-muted); }
+    .upload-form { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); }
+    .form-row { display: flex; gap: 1rem; align-items: end; }
+    .form-field { flex: 1; }
+    .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-muted); }
+    .form-input { width: 100%; padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 0.9rem; font-family: inherit; }
+    .form-input:focus { outline: none; border-color: var(--accent-primary); }
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted); }
+    .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--accent-primary); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; z-index: 3000; animation: slideIn 0.3s; }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--danger); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .file-preview-list { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+    .file-preview-item { width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
+    .file-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .confirm-modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 2rem; }
+    .confirm-modal { max-width: 500px; }
+    .confirm-modal .modal-body { text-align: center; }
+    .confirm-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+    .assignee-tag { padding: 0.35rem 0.6rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; font-size: 0.85rem; color: var(--success); display: inline-flex; align-items: center; gap: 0.35rem; }
+    @media (max-width: 768px) { .header-content { flex-wrap: wrap; } .search-box { width: 100%; order: 3; } .detail-content { grid-template-columns: 1fr; } .filters { flex-direction: column; align-items: stretch; } .stats { margin-left: 0; justify-content: center; } .theme-group-images { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useCallback, useMemo, useEffect } = React;
+    const API_BASE = '';
+    
+    const SERVICE_CONFIG = {
+      '리타민': { size: '1280x853', width: 1280, height: 853 },
+      'ETFG': { size: '1280x853', width: 1280, height: 853 },
+      'COMPG': { size: '1280x332', width: 1280, height: 332 }
+    };
+    const SERVICE_OPTIONS = Object.keys(SERVICE_CONFIG);
+    
+    const STATUS_CONFIG = {
+      final: { label: '최종 컨펌', color: '#10b981', bg: '#d1fae5' },
+      candidate: { label: '후보', color: '#f59e0b', bg: '#fef3c7' },
+      reference: { label: '레퍼런스', color: '#6b7280', bg: '#f3f4f6' }
+    };
+
+    const api = {
+      async getImages() { const res = await fetch(`${API_BASE}/api/images`); return res.json(); },
+      async uploadImages(files, theme, merge) {
+        const formData = new FormData();
+        files.forEach(file => formData.append('files', file));
+        formData.append('theme', theme || '');
+        formData.append('merge', (merge === true).toString());
+        const res = await fetch(`${API_BASE}/api/images`, { method: 'POST', body: formData });
+        return res.json();
+      },
+      async updateImage(id, updates) {
+        const res = await fetch(`${API_BASE}/api/images/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates) });
+        return res.json();
+      },
+      async deleteImage(id) { const res = await fetch(`${API_BASE}/api/images/${id}`, { method: 'DELETE' }); return res.json(); },
+      async uploadServiceImage(id, service, file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('service', service);
+        const res = await fetch(`${API_BASE}/api/images/${id}/service-image`, { method: 'POST', body: formData });
+        return res.json();
+      }
+    };
+
+    function getOriginalServiceFromFilename(filename) {
+      if (!filename) return null;
+      const serviceNames = ['ETFG', 'COMPG', '리타민'];
+      for (const service of serviceNames) {
+        if (filename.startsWith(service + '_')) return service;
+      }
+      return null;
+    }
+
+    function Lightbox({ url, service, size, onClose }) {
+      return (
+        <div className="lightbox-overlay" onClick={onClose}>
+          <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+            <img src={url} alt={service} />
+            <div className="lightbox-info">{service} - {size}</div>
+          </div>
+        </div>
+      );
+    }
+
+    function ConfirmModal({ message, onConfirm, onCancel }) {
+      return (
+        <div className="confirm-modal-overlay" onClick={onCancel}>
+          <div className="modal confirm-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">확인</h2>
+              <button className="modal-close" onClick={onCancel}>✕</button>
+            </div>
+            <div className="modal-body">
+              <p style={{fontSize:'1rem', marginBottom:'1rem', whiteSpace:'pre-line', textAlign:'left', lineHeight:'1.6'}}>{message}</p>
+              <div className="confirm-buttons">
+                <button className="btn btn-secondary" onClick={onCancel}>아니오 (새 시안)</button>
+                <button className="btn btn-primary" onClick={onConfirm}>예 (합치기)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ThemeGroup({ theme, images, onImageClick, onBulkServiceAdd, onBulkStatusChange, onBulkDelete, getServiceDisplay }) {
+      const [isOpen, setIsOpen] = useState(true);
+      const [selectedIds, setSelectedIds] = useState(new Set());
+      
+      const allServices = useMemo(() => {
+        const serviceSet = new Set();
+        images.forEach(img => getServiceDisplay(img.service).forEach(s => serviceSet.add(s)));
+        return Array.from(serviceSet);
+      }, [images, getServiceDisplay]);
+      const confirmedCount = images.filter(img => img.status === 'final').length;
+
+      const toggleSelect = (id, e) => {
+        e.stopPropagation();
+        setSelectedIds(prev => {
+          const newSet = new Set(prev);
+          if (newSet.has(id)) newSet.delete(id);
+          else newSet.add(id);
+          return newSet;
+        });
+      };
+
+      const selectAll = () => setSelectedIds(new Set(images.map(img => img.id)));
+      const deselectAll = () => setSelectedIds(new Set());
+
+      const handleBulkDelete = () => {
+        if (selectedIds.size === 0) return;
+        if (window.confirm(`선택한 ${selectedIds.size}개 이미지를 삭제하시겠습니까?`)) {
+          onBulkDelete(Array.from(selectedIds));
+          setSelectedIds(new Set());
+        }
+      };
+
+      const handleBulkStatus = (status) => {
+        if (selectedIds.size === 0) return;
+        onBulkStatusChange(Array.from(selectedIds), status);
+        setSelectedIds(new Set());
+      };
+
+      return (
+        <div className="theme-group">
+          <div className="theme-group-header" onClick={() => setIsOpen(!isOpen)}>
+            <div className="theme-group-title">
+              <span className="theme-group-name">📁 {theme}</span>
+              <span className="theme-group-count">{images.length}개 이미지 {confirmedCount > 0 && `(${confirmedCount}개 컨펌)`}</span>
+            </div>
+            <div className="theme-group-meta">
+              <div className="theme-group-services">
+                {allServices.map(s => <span key={s} className="theme-group-service">{s}</span>)}
+              </div>
+              <span className={`theme-group-toggle ${isOpen ? 'open' : ''}`}>▼</span>
+            </div>
+          </div>
+          <div className={`theme-group-content ${isOpen ? 'open' : ''}`}>
+            {selectedIds.size > 0 && (
+              <div className="theme-group-bulk-actions">
+                <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>{selectedIds.size}개 선택됨</span>
+                <button className="btn btn-small btn-secondary" onClick={selectAll}>전체선택</button>
+                <button className="btn btn-small btn-secondary" onClick={deselectAll}>선택해제</button>
+                <span style={{margin:'0 0.5rem', color:'var(--border-color)'}}>|</span>
+                <button className="btn btn-small btn-secondary" onClick={() => handleBulkStatus('final')}>✓ 컨펌</button>
+                <button className="btn btn-small btn-secondary" onClick={() => handleBulkStatus('candidate')}>후보</button>
+                <button className="btn btn-small btn-secondary" onClick={() => handleBulkStatus('reference')}>레퍼런스</button>
+                <span style={{margin:'0 0.5rem', color:'var(--border-color)'}}>|</span>
+                <button className="btn btn-small btn-danger" onClick={handleBulkDelete}>🗑️ 삭제</button>
+              </div>
+            )}
+            <div className="theme-group-images">
+              {images.map(img => (
+                <div key={img.id} className={`theme-group-image ${selectedIds.has(img.id) ? 'selected' : ''}`} onClick={() => onImageClick(img)}>
+                  <div className={`theme-group-image-checkbox ${selectedIds.has(img.id) ? 'checked' : ''}`} onClick={(e) => toggleSelect(img.id, e)}>
+                    {selectedIds.has(img.id) && '✓'}
+                  </div>
+                  <img src={img.url} alt={img.name} />
+                  <span className="theme-group-image-status" style={{ background: STATUS_CONFIG[img.status]?.bg || '#f3f4f6', color: STATUS_CONFIG[img.status]?.color || '#6b7280' }}>
+                    {STATUS_CONFIG[img.status]?.label || '미분류'}
+                  </span>
+                  <div className="theme-group-image-overlay">
+                    <div className="theme-group-image-theme">{img.theme || '미분류'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="theme-group-actions">
+              <span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>일괄 서비스 추가:</span>
+              {SERVICE_OPTIONS.map(service => (
+                <button key={service} className="btn btn-secondary btn-small" onClick={() => onBulkServiceAdd(images.map(img => img.id), service)}>+ {service}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function DetailModal({ image, onClose, updateImageField, addService, removeService, uploadServiceImage, addTag, removeTag, addAssignee, removeAssignee, deleteImage, setSelectedImage, getSimilarImages, getServiceDisplay, showToast }) {
+      const [showServiceSelect, setShowServiceSelect] = useState(false);
+      const [lightbox, setLightbox] = useState(null);
+      const [isEditingTheme, setIsEditingTheme] = useState(false);
+      const [editThemeName, setEditThemeName] = useState(image.theme || '');
+      const similarImages = getSimilarImages(image);
+      const currentServices = getServiceDisplay(image.service);
+      const availableServices = SERVICE_OPTIONS.filter(s => !currentServices.includes(s));
+      const originalService = getOriginalServiceFromFilename(image.name);
+
+      const handleServiceImageUpload = (service, e) => {
+        const file = e.target.files[0];
+        if (file) uploadServiceImage(image.id, service, file);
+      };
+
+      const getServiceImageStatus = (service) => {
+        if (image.serviceImages && image.serviceImages[service]) return { status: 'uploaded', label: '✓ 등록됨', url: image.serviceImages[service] };
+        if (originalService === service) return { status: 'original', label: '✓ 원본', url: image.url };
+        return { status: 'missing', label: '미등록', url: null };
+      };
+
+      const handleThemeSave = async () => {
+        const trimmed = editThemeName.trim();
+        if (trimmed && trimmed !== image.theme) {
+          await updateImageField(image.id, 'theme', trimmed);
+          showToast('테마명이 수정되었습니다.');
+        }
+        setIsEditingTheme(false);
+      };
+
+      const handleThemeKeyDown = (e) => {
+        if (e.key === 'Enter') handleThemeSave();
+        if (e.key === 'Escape') { setEditThemeName(image.theme || ''); setIsEditingTheme(false); }
+      };
+
+      return (
+        <div className="modal-overlay" onClick={onClose}>
+          <div className="modal detail-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              {isEditingTheme ? (
+                <div style={{display:'flex', alignItems:'center', gap:'0.5rem', flex:1}}>
+                  <input 
+                    type="text" 
+                    value={editThemeName} 
+                    onChange={e => setEditThemeName(e.target.value)}
+                    onKeyDown={handleThemeKeyDown}
+                    onBlur={handleThemeSave}
+                    autoFocus
+                    style={{
+                      fontSize:'1.25rem', fontWeight:'600', padding:'0.25rem 0.5rem',
+                      background:'var(--bg-tertiary)', border:'1px solid var(--accent-primary)',
+                      borderRadius:'6px', color:'var(--text-primary)', width:'300px'
+                    }}
+                  />
+                  <button className="btn btn-primary btn-small" onClick={handleThemeSave}>저장</button>
+                  <button className="btn btn-secondary btn-small" onClick={() => { setEditThemeName(image.theme || ''); setIsEditingTheme(false); }}>취소</button>
+                </div>
+              ) : (
+                <h2 className="modal-title" style={{display:'flex', alignItems:'center', gap:'0.5rem', cursor:'pointer'}} onClick={() => setIsEditingTheme(true)} title="클릭하여 테마명 수정">
+                  {image.theme || '미분류'}
+                  <span style={{fontSize:'0.9rem', color:'var(--text-muted)'}}>✏️</span>
+                </h2>
+              )}
+              <button className="modal-close" onClick={onClose}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-content">
+                <div>
+                  <img src={image.url} alt={image.name} className="detail-image" />
+                  {currentServices.length > 0 && (
+                    <div className="service-images-section">
+                      <div className="service-images-title">📐 서비스별 이미지 크기</div>
+                      {currentServices.map(service => {
+                        const config = SERVICE_CONFIG[service];
+                        const imgStatus = getServiceImageStatus(service);
+                        return (
+                          <div key={service} className="service-image-row">
+                            <div className="service-image-name">{service}</div>
+                            <div className="service-image-size">{config?.size || '원본'}</div>
+                            <div className="service-image-preview" onClick={() => imgStatus.url && setLightbox({ url: imgStatus.url, service, size: config?.size })} title={imgStatus.url ? '클릭하여 크게 보기' : ''}>
+                              {imgStatus.url ? <img src={imgStatus.url} alt={`${service} 이미지`} /> : <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-muted)',fontSize:'0.7rem'}}>없음</div>}
+                            </div>
+                            <div className="service-image-upload">
+                              <span className={`service-image-status ${imgStatus.status}`}>{imgStatus.label}</span>
+                              {imgStatus.url && <a href={imgStatus.status === 'uploaded' ? `/api/images/${image.id}/download?service=${service}` : `/api/images/${image.id}/download`} className="btn btn-secondary btn-small">📥</a>}
+                              <label className="btn btn-secondary btn-small" style={{cursor:'pointer'}}>
+                                📤 {imgStatus.status === 'missing' ? '업로드' : '변경'}
+                                <input type="file" accept="image/*" style={{display:'none'}} onChange={(e) => handleServiceImageUpload(service, e)} />
+                              </label>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {similarImages.length > 0 && (
+                    <div className="similar-section">
+                      <div className="similar-title">🔗 유사 이미지 (같은 태그)</div>
+                      <div className="similar-grid">
+                        {similarImages.map(sim => (
+                          <div key={sim.id} className="similar-item" onClick={() => setSelectedImage(sim)}>
+                            <img src={sim.url} alt={sim.name} />
+                            <div className="similar-info">{sim.theme}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="detail-info-section">
+                  <div className="detail-field">
+                    <span className="detail-label">서비스</span>
+                    <div className="service-list">
+                      {currentServices.map(s => (
+                        <span key={s} className="service-tag">{s} <span style={{fontSize:'0.7rem',opacity:0.7}}>({SERVICE_CONFIG[s]?.size})</span><button className="service-remove" onClick={() => removeService(image.id, s)}>×</button></span>
+                      ))}
+                      {currentServices.length === 0 && <span style={{color:'var(--text-muted)',fontSize:'0.85rem'}}>미분류</span>}
+                      {showServiceSelect ? (
+                        <select className="service-select" onChange={(e) => { if(e.target.value) addService(image.id, e.target.value); setShowServiceSelect(false); }} onBlur={() => setShowServiceSelect(false)} autoFocus>
+                          <option value="">선택...</option>
+                          {availableServices.map(s => <option key={s} value={s}>{s} ({SERVICE_CONFIG[s]?.size})</option>)}
+                        </select>
+                      ) : availableServices.length > 0 && <button className="service-add-btn" onClick={() => setShowServiceSelect(true)}>+ 서비스 추가</button>}
+                    </div>
+                  </div>
+                  <div className="detail-field">
+                    <span className="detail-label">테마 설명</span>
+                    <textarea className="textarea-field" defaultValue={image.themeDescription || ''} onBlur={(e) => updateImageField(image.id, 'themeDescription', e.target.value)} placeholder="테마에 대한 설명을 입력하세요..." />
+                  </div>
+                  <div className="detail-field">
+                    <span className="detail-label">상태</span>
+                    <div className="status-selector">
+                      {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+                        <button key={key} className={`status-btn ${key} ${image.status === key ? 'active' : ''}`} onClick={() => { updateImageField(image.id, 'status', key); showToast('상태가 변경되었습니다.'); }}>{cfg.label}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="detail-field">
+                    <span className="detail-label">담당자</span>
+                    <div className="tags-container">
+                      {(image.assignees || []).map(assignee => <span key={assignee} className="assignee-tag">👤 {assignee}<button className="tag-remove" onClick={() => removeAssignee(image.id, assignee)}>×</button></span>)}
+                      <input type="text" className="tag-input" placeholder="+ 담당자 추가" onKeyPress={(e) => { if(e.key === 'Enter') { addAssignee(image.id, e.target.value); e.target.value = ''; }}} />
+                    </div>
+                  </div>
+                  <div className="detail-field">
+                    <span className="detail-label">태그</span>
+                    <div className="tags-container">
+                      {(image.tags || []).map(tag => <span key={tag} className="tag-item">#{tag}<button className="tag-remove" onClick={() => removeTag(image.id, tag)}>×</button></span>)}
+                      <input type="text" className="tag-input" placeholder="+ 태그 추가" onKeyPress={(e) => { if(e.key === 'Enter') { addTag(image.id, e.target.value); e.target.value = ''; }}} />
+                    </div>
+                  </div>
+                  <div className="detail-field">
+                    <span className="detail-label">무드 키워드 (AI 분석)</span>
+                    <div className="tags-container">
+                      {(image.mood || []).length > 0 ? (image.mood || []).map(m => <span key={m} className="tag mood-tag">{m}</span>) : <span style={{color:'var(--text-muted)',fontSize:'0.85rem'}}>AI 분석 대기 중...</span>}
+                    </div>
+                  </div>
+                  <div className="detail-field">
+                    <span className="detail-label">이미지 프롬프트</span>
+                    <textarea className="textarea-field" defaultValue={image.prompt || ''} onBlur={(e) => updateImageField(image.id, 'prompt', e.target.value)} placeholder="이미지 생성에 사용한 프롬프트를 입력하세요..." style={{minHeight:'80px'}} />
+                  </div>
+                  <div className="detail-field">
+                    <span className="detail-label">메모</span>
+                    <textarea className="textarea-field" defaultValue={image.memo || ''} onBlur={(e) => updateImageField(image.id, 'memo', e.target.value)} placeholder="메모를 입력하세요..." />
+                  </div>
+                  <div className="detail-actions">
+                    <button className="btn btn-danger btn-small" onClick={() => { if(window.confirm('정말로 이 이미지를 삭제하시겠습니까?\n삭제된 이미지는 복구할 수 없습니다.')) deleteImage(image.id); }}>🗑️</button>
+                    <div className="download-group" style={{flex:1, display:'flex', gap:'0.5rem'}}>
+                      <select id="download-size" className="filter-select" style={{flex:1, minWidth:'0'}} defaultValue="">
+                        <option value="">원본</option>
+                        <option value="1280x853">1280×853 (리타민, ETFG)</option>
+                        <option value="1280x332">1280×332 (COMPG)</option>
+                      </select>
+                      <button className="btn btn-secondary btn-small" style={{whiteSpace:'nowrap'}} onClick={() => { const size = document.getElementById('download-size').value; if(size) { const [w,h] = size.split('x'); window.location.href = `/api/images/${image.id}/download?width=${w}&height=${h}`; } else window.location.href = `/api/images/${image.id}/download`; }}>📥 다운로드</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {lightbox && <Lightbox url={lightbox.url} service={lightbox.service} size={lightbox.size} onClose={() => setLightbox(null)} />}
+        </div>
+      );
+    }
+
+    function UploadModal({ onClose, onUpload, existingThemes, existingImages, showToast }) {
+      const [dragOver, setDragOver] = useState(false);
+      const [files, setFiles] = useState([]);
+      const [uploading, setUploading] = useState(false);
+      const [previews, setPreviews] = useState([]);
+      const [selectedFiles, setSelectedFiles] = useState(new Set()); // 선택된 파일 인덱스
+
+      // 파일명에서 서비스와 테마 추출
+      const parseFilename = (filename) => {
+        const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+        const serviceNames = ['ETFG', 'COMPG', '리타민'];
+        for (const service of serviceNames) {
+          if (nameWithoutExt.startsWith(service + '_')) {
+            return { service, theme: nameWithoutExt.substring(service.length + 1) };
+          }
+        }
+        return { service: null, theme: nameWithoutExt };
+      };
+
+      // 기존 테마 정보 가져오기
+      const getExistingThemeInfo = (theme) => {
+        if (!existingImages) return null;
+        const img = existingImages.find(i => i.theme === theme);
+        if (!img) return null;
+        const services = Array.isArray(img.service) ? img.service : [img.service];
+        return {
+          services: services.filter(s => s && s !== '미분류'),
+          url: img.url
+        };
+      };
+
+      // 파일 정보 배열 (인덱스 포함)
+      const fileInfos = useMemo(() => {
+        return files.map((file, index) => {
+          const { service, theme } = parseFilename(file.name);
+          const existingInfo = getExistingThemeInfo(theme);
+          const isDuplicate = existingInfo && service && existingInfo.services.includes(service);
+          const isNewService = existingInfo && service && !existingInfo.services.includes(service);
+          return {
+            file,
+            preview: previews[index],
+            index,
+            service,
+            theme,
+            existingInfo,
+            isDuplicate, // 같은 서비스가 이미 있음
+            isNewService, // 테마는 있지만 다른 서비스
+            isNewTheme: !existingInfo // 완전 새 테마
+          };
+        });
+      }, [files, previews, existingImages]);
+
+      // 파일 선택 시 기본으로 모두 선택 (중복 제외)
+      useEffect(() => {
+        const defaultSelected = new Set();
+        fileInfos.forEach((info, idx) => {
+          if (!info.isDuplicate) {
+            defaultSelected.add(idx);
+          }
+        });
+        setSelectedFiles(defaultSelected);
+      }, [fileInfos.length]);
+
+      const handleDrop = useCallback((e) => {
+        e.preventDefault(); setDragOver(false);
+        const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        setFiles(dropped); setPreviews(dropped.map(f => URL.createObjectURL(f)));
+      }, []);
+
+      const handleFileSelect = (e) => {
+        const selected = Array.from(e.target.files);
+        setFiles(selected); setPreviews(selected.map(f => URL.createObjectURL(f)));
+      };
+
+      const toggleFileSelection = (index) => {
+        setSelectedFiles(prev => {
+          const newSet = new Set(prev);
+          if (newSet.has(index)) newSet.delete(index);
+          else newSet.add(index);
+          return newSet;
+        });
+      };
+
+      const selectAll = () => {
+        setSelectedFiles(new Set(fileInfos.map((_, idx) => idx)));
+      };
+
+      const deselectAll = () => {
+        setSelectedFiles(new Set());
+      };
+
+      const selectNonDuplicates = () => {
+        const nonDuplicates = new Set();
+        fileInfos.forEach((info, idx) => {
+          if (!info.isDuplicate) nonDuplicates.add(idx);
+        });
+        setSelectedFiles(nonDuplicates);
+      };
+
+      const handleUpload = async () => {
+        if (selectedFiles.size === 0) return;
+        setUploading(true);
+
+        // 선택된 파일들을 테마별로 그룹화
+        const groupedByTheme = {};
+        fileInfos.forEach((info, idx) => {
+          if (!selectedFiles.has(idx)) return;
+          if (!groupedByTheme[info.theme]) {
+            groupedByTheme[info.theme] = { files: [], shouldMerge: info.isNewService || info.isDuplicate };
+          }
+          groupedByTheme[info.theme].files.push(info.file);
+          // 하나라도 기존 테마면 병합
+          if (info.existingInfo) groupedByTheme[info.theme].shouldMerge = true;
+        });
+
+        // 테마별로 업로드
+        let successCount = 0;
+        let failCount = 0;
+        for (const [theme, data] of Object.entries(groupedByTheme)) {
+          const success = await onUpload(data.files, theme, data.shouldMerge);
+          if (success) {
+            successCount += data.files.length;
+          } else {
+            failCount += data.files.length;
+          }
+        }
+        
+        if (failCount > 0 && successCount === 0) {
+          showToast('업로드에 실패했습니다.', 'error');
+        } else if (failCount > 0) {
+          showToast(`${successCount}개 성공, ${failCount}개 실패`, 'warning');
+        } else {
+          showToast(`${successCount}개 이미지가 업로드되었습니다.`);
+        }
+        
+        setUploading(false);
+        onClose(); // 업로드 완료 후 모달 닫기
+      };
+
+      const handleOverlayClick = () => {
+        onClose();
+      };
+
+      const duplicateCount = fileInfos.filter(f => f.isDuplicate).length;
+      const newServiceCount = fileInfos.filter(f => f.isNewService).length;
+      const newThemeCount = fileInfos.filter(f => f.isNewTheme).length;
+
+      return (
+        <div className="modal-overlay" onClick={handleOverlayClick}>
+          <div className="modal" style={{maxWidth: '800px'}} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">이미지 업로드</h2>
+              <button className="modal-close" onClick={onClose}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className={`upload-zone ${dragOver ? 'dragover' : ''}`} onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} onClick={() => document.getElementById('file-input').click()}>
+                <div className="upload-icon">📁</div>
+                <div className="upload-text">{files.length > 0 ? `${files.length}개 파일 선택됨` : '이미지를 드래그하거나 클릭하여 선택'}</div>
+                <div className="upload-hint">PNG, JPG, GIF, WebP 지원 · 파일명에서 테마 자동 추출 (예: 리타민_2차전지.jpg → 2차전지)</div>
+                <input id="file-input" type="file" multiple accept="image/*" style={{display:'none'}} onChange={handleFileSelect} />
+              </div>
+              
+              {fileInfos.length > 0 && (
+                <div style={{marginTop: '1.5rem'}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                    <div style={{fontSize: '0.9rem', color: 'var(--text-muted)'}}>
+                      📋 파일 목록 ({selectedFiles.size}/{fileInfos.length}개 선택)
+                      {duplicateCount > 0 && <span style={{color: 'var(--danger)', marginLeft: '0.5rem'}}>⚠️ 중복 {duplicateCount}개</span>}
+                      {newServiceCount > 0 && <span style={{color: 'var(--success)', marginLeft: '0.5rem'}}>✅ 자동병합 {newServiceCount}개</span>}
+                    </div>
+                    <div style={{display: 'flex', gap: '0.5rem'}}>
+                      <button className="btn btn-small btn-secondary" onClick={selectAll}>전체선택</button>
+                      <button className="btn btn-small btn-secondary" onClick={deselectAll}>전체해제</button>
+                      {duplicateCount > 0 && <button className="btn btn-small btn-secondary" onClick={selectNonDuplicates}>중복제외</button>}
+                    </div>
+                  </div>
+                  
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '350px', overflowY: 'auto'}}>
+                    {fileInfos.map((info, idx) => (
+                      <div key={idx} 
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem',
+                          background: info.isDuplicate ? 'rgba(239,68,68,0.1)' : info.isNewService ? 'rgba(16,185,129,0.1)' : 'var(--bg-tertiary)',
+                          borderRadius: '8px',
+                          border: info.isDuplicate ? '1px solid var(--danger)' : info.isNewService ? '1px solid var(--success)' : '1px solid var(--border-color)',
+                          opacity: selectedFiles.has(idx) ? 1 : 0.5
+                        }}
+                      >
+                        <div 
+                          onClick={() => toggleFileSelection(idx)}
+                          style={{
+                            width: '22px', height: '22px', borderRadius: '4px', cursor: 'pointer',
+                            border: selectedFiles.has(idx) ? '2px solid var(--accent-primary)' : '2px solid var(--border-color)',
+                            background: selectedFiles.has(idx) ? 'var(--accent-primary)' : 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: 'white', fontSize: '0.8rem', flexShrink: 0
+                          }}
+                        >
+                          {selectedFiles.has(idx) && '✓'}
+                        </div>
+                        
+                        <img src={info.preview} alt="" style={{width: '50px', height: '50px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0}} />
+                        
+                        <div style={{flex: 1, minWidth: 0}}>
+                          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem'}}>
+                            <span style={{fontWeight: '600', color: 'var(--accent-secondary)'}}>{info.theme}</span>
+                            <span style={{fontSize: '0.75rem', padding: '0.15rem 0.4rem', background: 'rgba(245,158,11,0.2)', color: '#f59e0b', borderRadius: '4px'}}>{info.service || '미분류'}</span>
+                          </div>
+                          <div style={{fontSize: '0.75rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{info.file.name}</div>
+                        </div>
+                        
+                        <div style={{textAlign: 'right', flexShrink: 0}}>
+                          {info.isDuplicate && (
+                            <div style={{fontSize: '0.75rem', color: 'var(--danger)', fontWeight: '500'}}>
+                              ⚠️ 중복 (기존: {info.service})
+                            </div>
+                          )}
+                          {info.isNewService && (
+                            <div style={{fontSize: '0.75rem', color: 'var(--success)', fontWeight: '500'}}>
+                              ✅ 자동 병합
+                              <div style={{fontSize: '0.65rem', color: 'var(--text-muted)'}}>기존: {info.existingInfo.services.join(', ')}</div>
+                            </div>
+                          )}
+                          {info.isNewTheme && (
+                            <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>
+                              🆕 새 테마
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div style={{marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>
+                      {selectedFiles.size > 0 && `${selectedFiles.size}개 파일 업로드 예정`}
+                    </div>
+                    <div style={{display: 'flex', gap: '0.75rem'}}>
+                      <button className="btn btn-secondary" onClick={onClose}>취소</button>
+                      <button className="btn btn-primary" onClick={handleUpload} disabled={uploading || selectedFiles.size === 0}>
+                        {uploading ? '업로드 중...' : `업로드 (${selectedFiles.size})`}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [images, setImages] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [selectedTheme, setSelectedTheme] = useState('all');
+      const [selectedService, setSelectedService] = useState('all');
+      const [selectedStatus, setSelectedStatus] = useState('all');
+      const [selectedImage, setSelectedImage] = useState(null);
+      const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+      const [viewMode, setViewMode] = useState('grid');
+      const [toast, setToast] = useState(null);
+
+      useEffect(() => { loadImages(); }, []);
+
+      const loadImages = async () => {
+        try { setLoading(true); const data = await api.getImages(); setImages(data || []); }
+        catch (error) { showToast('데이터를 불러오는데 실패했습니다.', 'error'); }
+        finally { setLoading(false); }
+      };
+
+      const showToast = (message, type = 'success') => { setToast({ message, type }); setTimeout(() => setToast(null), 3000); };
+
+      const themes = useMemo(() => {
+        const themeSet = new Set(images.map(img => img.theme).filter(Boolean));
+        return ['all', ...Array.from(themeSet).sort()];
+      }, [images]);
+
+      const services = useMemo(() => {
+        const serviceSet = new Set();
+        images.forEach(img => {
+          if (Array.isArray(img.service)) img.service.forEach(s => serviceSet.add(s));
+          else if (img.service) serviceSet.add(img.service);
+        });
+        return ['all', ...Array.from(serviceSet).sort()];
+      }, [images]);
+
+      const filteredImages = useMemo(() => {
+        return images.filter(img => {
+          const searchLower = searchQuery.toLowerCase();
+          const matchesSearch = !searchQuery || (img.name || '').toLowerCase().includes(searchLower) || (img.theme || '').toLowerCase().includes(searchLower) || (Array.isArray(img.service) ? img.service.join(' ') : (img.service || '')).toLowerCase().includes(searchLower) || (img.tags || []).some(tag => tag.toLowerCase().includes(searchLower)) || (img.mood || []).some(m => m.toLowerCase().includes(searchLower)) || (img.assignees || []).some(a => a.toLowerCase().includes(searchLower));
+          const matchesTheme = selectedTheme === 'all' || img.theme === selectedTheme;
+          let matchesService = selectedService === 'all';
+          if (!matchesService) { if (Array.isArray(img.service)) matchesService = img.service.includes(selectedService); else matchesService = img.service === selectedService; }
+          const matchesStatus = selectedStatus === 'all' || img.status === selectedStatus;
+          return matchesSearch && matchesTheme && matchesService && matchesStatus;
+        });
+      }, [images, searchQuery, selectedTheme, selectedService, selectedStatus]);
+
+      const groupedByTheme = useMemo(() => {
+        const groups = {};
+        filteredImages.forEach(img => { const theme = img.theme || '미분류'; if (!groups[theme]) groups[theme] = []; groups[theme].push(img); });
+        return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+      }, [filteredImages]);
+
+      const updateImageField = async (id, field, value) => {
+        try { await api.updateImage(id, { [field]: value }); setImages(prev => prev.map(img => img.id === id ? { ...img, [field]: value } : img)); if (selectedImage?.id === id) setSelectedImage(prev => ({ ...prev, [field]: value })); }
+        catch (error) { showToast('저장에 실패했습니다.', 'error'); }
+      };
+
+      const addService = async (id, newService) => {
+        const image = images.find(img => img.id === id);
+        if (!image) return;
+        let currentServices = Array.isArray(image.service) ? [...image.service] : (image.service && image.service !== '미분류' ? [image.service] : []);
+        if (currentServices.includes(newService)) return;
+        const newServices = [...currentServices, newService];
+        await updateImageField(id, 'service', newServices);
+        showToast('서비스가 추가되었습니다.');
+      };
+
+      const bulkAddService = async (ids, service) => {
+        let addedCount = 0;
+        for (const id of ids) {
+          const image = images.find(img => img.id === id);
+          if (!image) continue;
+          let currentServices = Array.isArray(image.service) ? [...image.service] : (image.service && image.service !== '미분류' ? [image.service] : []);
+          if (currentServices.includes(service)) continue;
+          const newServices = [...currentServices, service];
+          try { await api.updateImage(id, { service: newServices }); setImages(prev => prev.map(img => img.id === id ? { ...img, service: newServices } : img)); addedCount++; } catch (e) {}
+        }
+        if (addedCount > 0) showToast(`${addedCount}개 이미지에 ${service} 서비스가 추가되었습니다.`);
+        else showToast('모든 이미지에 이미 해당 서비스가 있습니다.', 'error');
+      };
+
+      const bulkStatusChange = async (ids, status) => {
+        let changedCount = 0;
+        for (const id of ids) {
+          try { await api.updateImage(id, { status }); setImages(prev => prev.map(img => img.id === id ? { ...img, status } : img)); changedCount++; } catch (e) {}
+        }
+        if (changedCount > 0) showToast(`${changedCount}개 이미지 상태가 변경되었습니다.`);
+      };
+
+      const bulkDelete = async (ids) => {
+        let deletedCount = 0;
+        for (const id of ids) {
+          try { await api.deleteImage(id); setImages(prev => prev.filter(img => img.id !== id)); deletedCount++; } catch (e) {}
+        }
+        if (deletedCount > 0) showToast(`${deletedCount}개 이미지가 삭제되었습니다.`);
+      };
+
+      const removeService = async (id, serviceToRemove) => {
+        const image = images.find(img => img.id === id);
+        if (!image) return;
+        let currentServices = Array.isArray(image.service) ? image.service : [image.service];
+        const newServices = currentServices.filter(s => s !== serviceToRemove);
+        const newServiceImages = { ...(image.serviceImages || {}) }; delete newServiceImages[serviceToRemove];
+        
+        // 썸네일 업데이트: 남은 서비스 이미지 중 하나로 변경
+        let newUrl = image.url;
+        const remainingServiceKeys = Object.keys(newServiceImages);
+        if (remainingServiceKeys.length > 0) {
+          // 남은 서비스 이미지 중 첫 번째로 썸네일 변경
+          newUrl = newServiceImages[remainingServiceKeys[0]];
+        }
+        
+        try {
+          await api.updateImage(id, { service: newServices.length > 0 ? newServices : ['미분류'], serviceImages: newServiceImages, url: newUrl });
+          setImages(prev => prev.map(img => img.id === id ? { ...img, service: newServices.length > 0 ? newServices : ['미분류'], serviceImages: newServiceImages, url: newUrl } : img));
+          if (selectedImage?.id === id) setSelectedImage(prev => ({ ...prev, service: newServices.length > 0 ? newServices : ['미분류'], serviceImages: newServiceImages, url: newUrl }));
+        } catch (error) { showToast('서비스 제거에 실패했습니다.', 'error'); }
+      };
+
+      const uploadServiceImage = async (id, service, file) => {
+        try {
+          const result = await api.uploadServiceImage(id, service, file);
+          if (result.success) { 
+            setImages(prev => prev.map(img => img.id === id ? { ...img, serviceImages: result.serviceImages, url: result.url } : img)); 
+            if (selectedImage?.id === id) setSelectedImage(prev => ({ ...prev, serviceImages: result.serviceImages, url: result.url })); 
+            showToast(`${service} 이미지가 업로드되었습니다.`); 
+          }
+        } catch (error) { showToast('이미지 업로드에 실패했습니다.', 'error'); }
+      };
+
+      const addTag = async (id, newTag) => { if (!newTag.trim()) return; const image = images.find(img => img.id === id); if (!image || (image.tags || []).includes(newTag.trim())) return; await updateImageField(id, 'tags', [...(image.tags || []), newTag.trim()]); };
+      const removeTag = async (id, tagToRemove) => { const image = images.find(img => img.id === id); if (!image) return; await updateImageField(id, 'tags', (image.tags || []).filter(t => t !== tagToRemove)); };
+      
+      const addAssignee = async (id, newAssignee) => { if (!newAssignee.trim()) return; const image = images.find(img => img.id === id); if (!image || (image.assignees || []).includes(newAssignee.trim())) return; await updateImageField(id, 'assignees', [...(image.assignees || []), newAssignee.trim()]); };
+      const removeAssignee = async (id, assigneeToRemove) => { const image = images.find(img => img.id === id); if (!image) return; await updateImageField(id, 'assignees', (image.assignees || []).filter(a => a !== assigneeToRemove)); };
+      
+      const deleteImage = async (id) => { try { await api.deleteImage(id); setImages(prev => prev.filter(img => img.id !== id)); setSelectedImage(null); showToast('이미지가 삭제되었습니다.'); } catch (error) { showToast('삭제에 실패했습니다.', 'error'); } };
+
+      const handleFileUpload = async (files, theme, merge) => {
+        try { 
+          const result = await api.uploadImages(files, theme, merge);
+          console.log('Upload result:', result);
+          return result && result.success === true;
+        }
+        catch (error) { 
+          console.error('Upload error:', error);
+          return false;
+        }
+      };
+
+      const getSimilarImages = (image) => { if (!image || !image.tags || image.tags.length === 0) return []; return images.filter(img => { if (img.id === image.id) return false; return (img.tags || []).some(tag => image.tags.includes(tag)); }).slice(0, 6); };
+      const getServiceDisplay = (service) => { if (Array.isArray(service)) return service.filter(s => s && s !== '미분류'); return service && service !== '미분류' ? [service] : []; };
+
+      return (
+        <div className="app">
+          <header className="header">
+            <div className="header-content">
+              <div className="logo"><div className="logo-icon">📊</div><span className="logo-text">ETF 테마 이미지 라이브러리</span></div>
+              <div className="search-box"><span className="search-icon">🔍</span><input type="text" className="search-input" placeholder="테마, 태그, 담당자로 검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} /></div>
+              <button className="btn btn-primary" onClick={() => setIsUploadModalOpen(true)}>➕ 이미지 업로드</button>
+            </div>
+          </header>
+          <main className="main-content">
+            <div className="filters">
+              <div className="filter-group"><span className="filter-label">서비스</span><select className="filter-select" value={selectedService} onChange={(e) => setSelectedService(e.target.value)}>{services.map(s => <option key={s} value={s}>{s === 'all' ? '전체 서비스' : s}</option>)}</select></div>
+              <div className="filter-group"><span className="filter-label">테마</span><select className="filter-select" value={selectedTheme} onChange={(e) => setSelectedTheme(e.target.value)}>{themes.map(t => <option key={t} value={t}>{t === 'all' ? '전체 테마' : t}</option>)}</select></div>
+              <div className="filter-group"><span className="filter-label">상태</span><select className="filter-select" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}><option value="all">전체</option><option value="final">최종 컨펌</option><option value="candidate">후보</option><option value="reference">레퍼런스</option></select></div>
+              <div className="view-toggle">
+                <button className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`} onClick={() => setViewMode('grid')}>▦</button>
+                <button className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>☰</button>
+                <button className={`view-toggle-btn ${viewMode === 'theme' ? 'active' : ''}`} onClick={() => setViewMode('theme')}>📁</button>
+              </div>
+              <div className="stats">
+                <div className="stat-item"><div className="stat-value">{filteredImages.length}</div><div className="stat-label">검색결과</div></div>
+                <div className="stat-item"><div className="stat-value">{images.filter(i => i.status === 'final').length}</div><div className="stat-label">컨펌됨</div></div>
+                <div className="stat-item"><div className="stat-value">{themes.length - 1}</div><div className="stat-label">테마</div></div>
+              </div>
+            </div>
+            {loading ? (<div className="loading"><div className="loading-spinner"></div><span>이미지를 불러오는 중...</span></div>) : filteredImages.length > 0 ? (
+              viewMode === 'theme' ? (<div>{groupedByTheme.map(([theme, themeImages]) => <ThemeGroup key={theme} theme={theme} images={themeImages} onImageClick={setSelectedImage} onBulkServiceAdd={bulkAddService} onBulkStatusChange={bulkStatusChange} onBulkDelete={bulkDelete} getServiceDisplay={getServiceDisplay} />)}</div>) : (
+                <div className={`image-grid ${viewMode === 'list' ? 'list-view' : ''}`}>
+                  {filteredImages.map(image => (
+                    <div key={image.id} className="image-card" onClick={() => setSelectedImage(image)}>
+                      <div className="image-preview"><img src={image.url} alt={image.name} /><span className="status-badge" style={{ background: STATUS_CONFIG[image.status]?.bg || '#f3f4f6', color: STATUS_CONFIG[image.status]?.color || '#6b7280' }}>{STATUS_CONFIG[image.status]?.label || '미분류'}</span></div>
+                      <div className="image-info">
+                        <div className="image-service">{getServiceDisplay(image.service).join(' · ') || '미분류'}</div>
+                        <div className="image-theme">{image.theme || '미분류'}</div>
+                        <div className="image-tags">{(image.tags || []).slice(0, 3).map(tag => <span key={tag} className="tag">#{tag}</span>)}{(image.mood || []).slice(0, 2).map(m => <span key={m} className="tag mood-tag">{m}</span>)}</div>
+                        <div className="list-extra-info"><div className="list-extra-row"><span className="list-extra-label">프롬프트</span><span className="list-extra-value">{image.prompt || '-'}</span></div><div className="list-extra-row"><span className="list-extra-label">메모</span><span className="list-extra-value">{image.memo || '-'}</span></div></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : (<div className="empty-state"><div className="empty-icon">🖼️</div><div>{images.length === 0 ? '아직 등록된 이미지가 없습니다' : '검색 결과가 없습니다'}</div></div>)}
+          </main>
+          {selectedImage && <DetailModal image={selectedImage} onClose={() => setSelectedImage(null)} updateImageField={updateImageField} addService={addService} removeService={removeService} uploadServiceImage={uploadServiceImage} addTag={addTag} removeTag={removeTag} addAssignee={addAssignee} removeAssignee={removeAssignee} deleteImage={deleteImage} setSelectedImage={setSelectedImage} getSimilarImages={getSimilarImages} getServiceDisplay={getServiceDisplay} showToast={showToast} />}
+          {isUploadModalOpen && <UploadModal onClose={() => { loadImages(); setViewMode('grid'); setIsUploadModalOpen(false); }} onUpload={handleFileUpload} existingThemes={themes.filter(t => t !== 'all')} existingImages={images} showToast={showToast} />}
+          {toast && <div className={`toast ${toast.type}`}>{toast.message}</div>}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
